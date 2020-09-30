@@ -76,6 +76,10 @@ class ProductItem extends StatelessWidget {
                 product.price,
                 product.title,
               );
+
+              // this will create connection to the NEAREST Scaffold, which
+              // in this case is ProductsOverviewScreen
+              Scaffold.of(context).openDrawer();
             },
           ),
         ),
