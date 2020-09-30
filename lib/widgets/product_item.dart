@@ -77,9 +77,20 @@ class ProductItem extends StatelessWidget {
                 product.title,
               );
 
-              // this will create connection to the NEAREST Scaffold, which
-              // in this case is ProductsOverviewScreen
-              Scaffold.of(context).openDrawer();
+              // `hideCurrentSnackBar` so that when you add items quickly,
+              // it will dismiss the previous SnackBar (no need to wait 2sec)
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('Added item to car!'),
+                // `duration` refers to duration of the Snackbar until it disappears
+                duration: Duration(seconds: 2),
+                action: SnackBarAction(
+                  label: 'UNDO',
+                  onPressed: () {
+                    cart.undoAddingItem(product.id);
+                  },
+                ),
+              ));
             },
           ),
         ),
