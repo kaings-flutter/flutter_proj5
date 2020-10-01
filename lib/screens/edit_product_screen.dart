@@ -14,6 +14,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _descriptionFocusNode = FocusNode();
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
+  final _form = GlobalKey<FormState>();
+
+  Map<String, Object> product = {};
 
   @override
   void initState() {
@@ -38,15 +41,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
+  void _saveForm() {
+    _form.currentState.save();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add / Edit Product'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: _saveForm,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
+          key: _form,
           child: ListView(
             children: [
               TextFormField(
@@ -55,6 +69,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 // when `enter` of keyboard is pressed
                 onFieldSubmitted: (value) {
                   FocusScope.of(context).requestFocus(_priceFocusNode);
+                },
+                // `onSaved` triggers on `_form.currentState.save()`
+                onSaved: (newValue) {
+                  product['title'] = newValue;
+
+                  // print('title..... ${product}');
                 },
               ),
               TextFormField(
@@ -66,12 +86,22 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 onFieldSubmitted: (value) {
                   FocusScope.of(context).requestFocus(_descriptionFocusNode);
                 },
+                onSaved: (newValue) {
+                  product['price'] = double.parse(newValue);
+
+                  // print('price..... ${product}');
+                },
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Description'),
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
                 focusNode: _descriptionFocusNode,
+                onSaved: (newValue) {
+                  product['description'] = newValue;
+
+                  // print('description..... ${product}');
+                },
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -102,6 +132,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       textInputAction: TextInputAction.done,
                       controller: _imageUrlController,
                       focusNode: _imageUrlFocusNode,
+                      onFieldSubmitted: (value) {
+                        _saveForm();
+                      },
+                      onSaved: (newValue) {
+                        product['imageUrl'] = newValue;
+
+                        print('imageURL..... ${product}');
+                      },
                     ),
                   )
                 ],
