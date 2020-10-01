@@ -10,6 +10,15 @@ class EditProductScreen extends StatefulWidget {
 class _EditProductScreenState extends State<EditProductScreen> {
   // focus on certain TextFormField when `enter` of keyboard is pressed
   final _priceFocusNode = FocusNode();
+  final _descriptionFocusNode = FocusNode();
+
+  // always need to dispose the `FocusNode` to avoid memory leak
+  @override
+  void dispose() {
+    _priceFocusNode.dispose();
+    _descriptionFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +41,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Price'),
+                // without this, `enter` means submit
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
                 focusNode: _priceFocusNode,
+                onFieldSubmitted: (value) {
+                  FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Description'),
+                maxLines: 5,
+                keyboardType: TextInputType.multiline,
+                focusNode: _descriptionFocusNode,
               ),
             ],
           ),
