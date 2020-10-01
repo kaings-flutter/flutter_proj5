@@ -42,7 +42,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
+    // `currentState.validate()` triggers validators to validate value
+    // returns true if all validators return no error
+    // returns false if any validator returns error
+    final isValid = _form.currentState.validate();
+    if (!isValid) {
+      return;
+    }
+
     _form.currentState.save();
+
+    print('saveForm..... ${product}');
   }
 
   @override
@@ -61,6 +71,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _form,
+          // autovalidate: true,   // or this will also trigger validators
           child: ListView(
             children: [
               TextFormField(
@@ -69,6 +80,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 // when `enter` of keyboard is pressed
                 onFieldSubmitted: (value) {
                   FocusScope.of(context).requestFocus(_priceFocusNode);
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter title!'; // error message
+                  }
+                  return null; // if no error
                 },
                 // `onSaved` triggers on `_form.currentState.save()`
                 onSaved: (newValue) {
@@ -85,6 +102,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 focusNode: _priceFocusNode,
                 onFieldSubmitted: (value) {
                   FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                },
+                validator: (value) {
+                  if (double.parse(value) < 0) {
+                    return 'Please enter valid price!';
+                  }
+
+                  return null;
                 },
                 onSaved: (newValue) {
                   product['price'] = double.parse(newValue);
@@ -137,8 +161,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       },
                       onSaved: (newValue) {
                         product['imageUrl'] = newValue;
-
-                        print('imageURL..... ${product}');
                       },
                     ),
                   )
